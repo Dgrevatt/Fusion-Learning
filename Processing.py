@@ -83,72 +83,10 @@ for c_col in rgb_info_df.columns:
 sns.pairplot(tile_df[['Red_mean','Green_mean','Blue_mean','Gray_mean','cell_type']],
              hue='cell_type', plot_kws = {'alpha': 0.5})
 
-#%%
 
-# Showing the colour range for all images, mean colour channels etc.
 
-n_samples = 5
-for sample_col in ['Red_mean', 'Green_mean', 'Blue_mean', 'Gray_mean']:
-    fig, m_axs = plt.subplots(7, n_samples, figsize = (4*n_samples, 3*7))
-    def take_n_space(in_rows, val_col, n):
-        s_rows = in_rows.sort_values([val_col])
-        s_idx = np.linspace(0, s_rows.shape[0]-1, n, dtype=int)
-        return s_rows.iloc[s_idx]
-    for n_axs, (type_name, type_rows) in zip(m_axs, 
-                                             tile_df.sort_values(['cell_type']).groupby('cell_type')):
 
-        for c_ax, (_, c_row) in zip(n_axs, 
-                                    take_n_space(type_rows, 
-                                                 sample_col,
-                                                 n_samples).iterrows()):
-            c_ax.imshow(c_row['image'])
-            c_ax.axis('off')
-            c_ax.set_title('{:2.2f}'.format(c_row[sample_col]))
-        n_axs[0].set_title(type_name)
-    fig.savefig('{}_samples.png'.format(sample_col), dpi=300)
-    
 
-#%%
-    
-##Export all images into flattened MNIST-Like dataset as vectors
-    ##WARNING - VERY LONG EXECUTION TIME
-
-#tile_df[['cell_type_idx', 'cell_type']].sort_values('cell_type_idx').drop_duplicates()
-#
-#from PIL import Image
-#def package_mnist_df(in_rows, 
-#                     image_col_name = 'image',
-#                     label_col_name = 'cell_type_idx',
-#                     image_shape=(28, 28), 
-#                     image_mode='RGB',
-#                     label_first=False
-#                    ):
-#    out_vec_list = in_rows[image_col_name].map(lambda x: 
-#                                               np.array(Image.\
-#                                                        fromarray(x).\
-#                                                        resize(image_shape, resample=Image.LANCZOS).\
-#                                                        convert(image_mode)).ravel())
-#    out_vec = np.stack(out_vec_list, 0)
-#    out_df = pd.DataFrame(out_vec)
-#    n_col_names =  ['pixel{:04d}'.format(i) for i in range(out_vec.shape[1])]
-#    out_df.columns = n_col_names
-#    out_df['label'] = in_rows[label_col_name].values.copy()
-#    if label_first:
-#        return out_df[['label']+n_col_names]
-#    else:
-#        return out_df
-#
-#from itertools import product
-#for img_side_dim, img_mode in product([8, 28, 64, 128], ['L', 'RGB']):
-#    if (img_side_dim==128) and (img_mode=='RGB'):
-#        # 128x128xRGB is a biggie
-#        break
-#    out_df = package_mnist_df(tile_df, 
-#                              image_shape=(img_side_dim, img_side_dim),
-#                             image_mode=img_mode)
-#    out_path = f'hmnist_{img_side_dim}_{img_side_dim}_{img_mode}.csv'
-#    out_df.to_csv(out_path, index=False)
-#    print(f'Saved {out_df.shape} -> {out_path}: {os.stat(out_path).st_size/1024:2.1f}kb')
 
 
 
